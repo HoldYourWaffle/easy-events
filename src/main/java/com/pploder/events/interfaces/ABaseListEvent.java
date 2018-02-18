@@ -1,21 +1,23 @@
-package com.pploder.events;
+package com.pploder.events.interfaces;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 /**
- * A simple implementation of an event using a {@link CopyOnWriteArrayList}
+ * A simple base-implementation of an event using a {@link List}. Does not implement triggering behavior.
  *
- * @param <L> Listener type. Must be a {@link Consumer} of type P
- * @param <P> Parameter type. The type of the argument passed to the listeners
- * @author Philipp Ploder
- * @since 1.0.0
+ * @see IEvent
+ * @see CopyOnWriteArrayList
+ * @param <L> Listener type
  */
-public class BaseEvent<L extends Consumer<P>, P> implements IEvent<L, P> {
-	private final List<L> listeners = new CopyOnWriteArrayList<>();
+public abstract class ABaseListEvent<L> implements IEvent<L> {
+	protected final List<L> listeners;
+	
+	public ABaseListEvent(List<L> list) {
+		listeners = list;
+	}
 	
 	@Override
 	public void addListener(L listener) throws NullPointerException {
@@ -42,11 +44,6 @@ public class BaseEvent<L extends Consumer<P>, P> implements IEvent<L, P> {
 	public void removeAllOccurrences(L listener) throws NullPointerException {
 		if (listener == null) throw new NullPointerException("The listener to remove may not be null");
 		listeners.removeIf(listener::equals);
-	}
-	
-	@Override
-	public void trigger(P parameter) {
-		listeners.forEach(listener -> listener.accept(parameter));
 	}
 	
 }
